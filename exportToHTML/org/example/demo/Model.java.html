@@ -1,0 +1,497 @@
+<html>
+<head>
+<title>Model.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #5f826b; font-style: italic;}
+.s4 { color: #67a37c; font-style: italic;}
+.s5 { color: #6aab73;}
+.s6 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Model.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">org</span><span class="s2">.</span><span class="s1">example</span><span class="s2">.</span><span class="s1">demo</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">sun</span><span class="s2">.</span><span class="s1">tools</span><span class="s2">.</span><span class="s1">attach</span><span class="s2">.</span><span class="s1">VirtualMachine</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">sun</span><span class="s2">.</span><span class="s1">tools</span><span class="s2">.</span><span class="s1">attach</span><span class="s2">.</span><span class="s1">VirtualMachineDescriptor</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javafx</span><span class="s2">.</span><span class="s1">application</span><span class="s2">.</span><span class="s1">Platform</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javafx</span><span class="s2">.</span><span class="s1">beans</span><span class="s2">.</span><span class="s1">property</span><span class="s2">.</span><span class="s1">SimpleStringProperty</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javafx</span><span class="s2">.</span><span class="s1">collections</span><span class="s2">.</span><span class="s1">FXCollections</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javafx</span><span class="s2">.</span><span class="s1">collections</span><span class="s2">.</span><span class="s1">ObservableList</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">management</span><span class="s2">.</span><span class="s1">MBeanServerConnection</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">management</span><span class="s2">.</span><span class="s1">remote</span><span class="s2">.</span><span class="s1">JMXConnector</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">management</span><span class="s2">.</span><span class="s1">remote</span><span class="s2">.</span><span class="s1">JMXConnectorFactory</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">management</span><span class="s2">.</span><span class="s1">remote</span><span class="s2">.</span><span class="s1">JMXServiceURL</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">lang</span><span class="s2">.</span><span class="s1">management</span><span class="s2">.</span><span class="s1">ManagementFactory</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">lang</span><span class="s2">.</span><span class="s1">management</span><span class="s2">.</span><span class="s1">ThreadInfo</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">lang</span><span class="s2">.</span><span class="s1">management</span><span class="s2">.</span><span class="s1">ThreadMXBean</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">Arrays</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">List</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">Properties</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">concurrent</span><span class="s2">.</span><span class="s1">Executors</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">concurrent</span><span class="s2">.</span><span class="s1">ScheduledExecutorService</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">concurrent</span><span class="s2">.</span><span class="s1">ScheduledFuture</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">concurrent</span><span class="s2">.</span><span class="s1">TimeUnit</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">stream</span><span class="s2">.</span><span class="s1">Collectors</span><span class="s2">;</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* The Model class manages the connection to JVM processes and retrieves thread information.</span>
+ <span class="s3">*/</span>
+<span class="s0">public class </span><span class="s1">Model </span><span class="s2">{</span>
+
+    <span class="s0">private final </span><span class="s1">ObservableList</span><span class="s2">&lt;</span><span class="s1">ThreadInfo</span><span class="s2">&gt; </span><span class="s1">observableThreadInfoList</span><span class="s2">;</span>
+    <span class="s0">private final </span><span class="s1">ObservableList</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">observableProcessList</span><span class="s2">;</span>
+
+    <span class="s0">private final </span><span class="s1">SimpleStringProperty peakThreadCount </span><span class="s2">= </span><span class="s0">new </span><span class="s1">SimpleStringProperty</span><span class="s2">();</span>
+    <span class="s0">private final </span><span class="s1">SimpleStringProperty liveThreadCount </span><span class="s2">= </span><span class="s0">new </span><span class="s1">SimpleStringProperty</span><span class="s2">();</span>
+    <span class="s0">private final </span><span class="s1">SimpleStringProperty daemonThreadCount </span><span class="s2">= </span><span class="s0">new </span><span class="s1">SimpleStringProperty</span><span class="s2">();</span>
+
+    <span class="s0">private </span><span class="s1">String selectedProcessId</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">String selectedProcessName</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">ThreadMXBean currentThreadMXBean</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">JMXConnector jmxConnector</span><span class="s2">;</span>
+    <span class="s0">private final </span><span class="s1">String thisAppProcessId</span><span class="s2">;</span>
+
+    <span class="s0">private final </span><span class="s1">VirtualMachineProvider virtualMachineProvider</span><span class="s2">;</span>
+
+    <span class="s0">private </span><span class="s1">String nameFilter</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">String idFilter</span><span class="s2">;</span>
+    <span class="s0">private boolean </span><span class="s1">nameFilterActive</span><span class="s2">;</span>
+    <span class="s0">private boolean </span><span class="s1">idFilterActive</span><span class="s2">;</span>
+    <span class="s0">private boolean </span><span class="s1">daemonFilterActive</span><span class="s2">;</span>
+
+    <span class="s0">private final </span><span class="s1">ScheduledExecutorService scheduler</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">ScheduledFuture</span><span class="s2">&lt;?&gt; </span><span class="s1">scheduledFuture</span><span class="s2">;</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Constructs a new Model instance.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">vmProvider the VirtualMachineProvider to use for attaching to JVM processes</span>
+     <span class="s3">*/</span>
+    <span class="s0">public </span><span class="s1">Model</span><span class="s2">(</span><span class="s1">VirtualMachineProvider vmProvider</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">observableThreadInfoList </span><span class="s2">= </span><span class="s1">FXCollections</span><span class="s2">.</span><span class="s1">observableArrayList</span><span class="s2">();</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">virtualMachineProvider </span><span class="s2">= </span><span class="s1">vmProvider</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">observableProcessList </span><span class="s2">= </span><span class="s1">FXCollections</span><span class="s2">.</span><span class="s1">observableArrayList</span><span class="s2">();</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">currentThreadMXBean </span><span class="s2">= </span><span class="s1">ManagementFactory</span><span class="s2">.</span><span class="s1">getThreadMXBean</span><span class="s2">();</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">selectedProcessId </span><span class="s2">= </span><span class="s1">String</span><span class="s2">.</span><span class="s1">valueOf</span><span class="s2">(</span><span class="s1">ManagementFactory</span><span class="s2">.</span><span class="s1">getRuntimeMXBean</span><span class="s2">().</span><span class="s1">getPid</span><span class="s2">());</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">selectedProcessName </span><span class="s2">= </span><span class="s5">&quot;&quot;</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">thisAppProcessId </span><span class="s2">= </span><span class="s1">selectedProcessId</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">scheduler </span><span class="s2">= </span><span class="s1">Executors</span><span class="s2">.</span><span class="s1">newSingleThreadScheduledExecutor</span><span class="s2">();</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">scheduledFuture </span><span class="s2">= </span><span class="s0">null</span><span class="s2">;</span>
+        <span class="s1">updateProcessList</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Attaches to the selected JVM process.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@throws </span><span class="s3">Exception if an error occurs while attaching to the process</span>
+     <span class="s3">*/</span>
+    <span class="s0">public void </span><span class="s1">attachToSelectedProcess</span><span class="s2">() </span><span class="s0">throws </span><span class="s1">Exception </span><span class="s2">{</span>
+        <span class="s1">closeConnection</span><span class="s2">();</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">isSameProcess</span><span class="s2">()) {</span>
+            <span class="s1">attachToCurrentProcess</span><span class="s2">();</span>
+            <span class="s1">updateProcessList</span><span class="s2">();</span>
+            <span class="s0">return</span><span class="s2">;</span>
+        <span class="s2">}</span>
+
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s1">VirtualMachine vm </span><span class="s2">= </span><span class="s1">virtualMachineProvider</span><span class="s2">.</span><span class="s1">attach</span><span class="s2">(</span><span class="s1">selectedProcessId</span><span class="s2">);</span>
+            <span class="s1">String jmxUrl </span><span class="s2">= </span><span class="s1">getJmxUrlFromVirtualMachine</span><span class="s2">(</span><span class="s1">vm</span><span class="s2">);</span>
+
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">jmxUrl </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+                <span class="s1">jmxUrl </span><span class="s2">= </span><span class="s1">vm</span><span class="s2">.</span><span class="s1">startLocalManagementAgent</span><span class="s2">();</span>
+                <span class="s1">vm</span><span class="s2">.</span><span class="s1">detach</span><span class="s2">();</span>
+            <span class="s2">}</span>
+
+            <span class="s1">connectToJmxServer</span><span class="s2">(</span><span class="s1">jmxUrl</span><span class="s2">);</span>
+            <span class="s1">updateProcessList</span><span class="s2">();</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">Exception e</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">Exception</span><span class="s2">(</span><span class="s5">&quot;Failed to connect to JVM: &quot; </span><span class="s2">+ </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getMessage</span><span class="s2">(), </span><span class="s1">e</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Checks if the selected process is the same as the current process.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@return </span><span class="s3">true if the selected process is the same as the current process, false otherwise</span>
+     <span class="s3">*/</span>
+    <span class="s0">public boolean </span><span class="s1">isSameProcess</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">selectedProcessId</span><span class="s2">.</span><span class="s1">equals</span><span class="s2">(</span><span class="s1">thisAppProcessId</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Attaches to the current JVM process.</span>
+     <span class="s3">*/</span>
+    <span class="s0">public void </span><span class="s1">attachToCurrentProcess</span><span class="s2">() {</span>
+        <span class="s1">setCurrentThreadMXBean</span><span class="s2">(</span><span class="s1">ManagementFactory</span><span class="s2">.</span><span class="s1">getThreadMXBean</span><span class="s2">());</span>
+        <span class="s1">setJmxConnector</span><span class="s2">(</span><span class="s0">null</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Retrieves the JMX URL from the specified VirtualMachine.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">vm the VirtualMachine to retrieve the JMX URL from</span>
+     <span class="s3">* </span><span class="s4">@return </span><span class="s3">the JMX URL</span>
+     <span class="s3">* </span><span class="s4">@throws </span><span class="s3">Exception if an error occurs while retrieving the JMX URL</span>
+     <span class="s3">*/</span>
+    <span class="s0">public </span><span class="s1">String getJmxUrlFromVirtualMachine</span><span class="s2">(</span><span class="s1">VirtualMachine vm</span><span class="s2">) </span><span class="s0">throws </span><span class="s1">Exception </span><span class="s2">{</span>
+        <span class="s1">Properties agentProperties </span><span class="s2">= </span><span class="s1">vm</span><span class="s2">.</span><span class="s1">getAgentProperties</span><span class="s2">();</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">agentProperties </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">Exception</span><span class="s2">(</span><span class="s5">&quot;Failed to retrieve agent properties from JVM.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s0">return </span><span class="s1">agentProperties</span><span class="s2">.</span><span class="s1">getProperty</span><span class="s2">(</span><span class="s5">&quot;com.sun.management.jmxremote.localConnectorAddress&quot;</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Connects to the JMX server using the specified JMX URL.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">jmxUrl the JMX URL to connect to</span>
+     <span class="s3">* </span><span class="s4">@throws </span><span class="s3">Exception if an error occurs while connecting to the JMX server</span>
+     <span class="s3">*/</span>
+    <span class="s0">public void </span><span class="s1">connectToJmxServer</span><span class="s2">(</span><span class="s1">String jmxUrl</span><span class="s2">) </span><span class="s0">throws </span><span class="s1">Exception </span><span class="s2">{</span>
+        <span class="s1">JMXServiceURL url </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JMXServiceURL</span><span class="s2">(</span><span class="s1">jmxUrl</span><span class="s2">);</span>
+        <span class="s1">setJmxConnector</span><span class="s2">(</span><span class="s1">JMXConnectorFactory</span><span class="s2">.</span><span class="s1">connect</span><span class="s2">(</span><span class="s1">url</span><span class="s2">));</span>
+        <span class="s1">MBeanServerConnection mbs </span><span class="s2">= </span><span class="s1">jmxConnector</span><span class="s2">.</span><span class="s1">getMBeanServerConnection</span><span class="s2">();</span>
+
+        <span class="s1">setCurrentThreadMXBean</span><span class="s2">(</span><span class="s1">ManagementFactory</span><span class="s2">.</span><span class="s1">newPlatformMXBeanProxy</span><span class="s2">(</span>
+                <span class="s1">mbs</span><span class="s2">, </span><span class="s1">ManagementFactory</span><span class="s2">.</span><span class="s1">THREAD_MXBEAN_NAME</span><span class="s2">, </span><span class="s1">ThreadMXBean</span><span class="s2">.</span><span class="s0">class</span><span class="s2">));</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Closes the connection to the JMX server.</span>
+     <span class="s3">*/</span>
+    <span class="s0">public void </span><span class="s1">closeConnection</span><span class="s2">() {</span>
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">jmxConnector </span><span class="s2">!= </span><span class="s0">null</span><span class="s2">) {</span>
+                <span class="s1">jmxConnector</span><span class="s2">.</span><span class="s1">close</span><span class="s2">();</span>
+                <span class="s1">jmxConnector </span><span class="s2">= </span><span class="s0">null</span><span class="s2">;</span>
+            <span class="s2">}</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">Exception e</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">err</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s5">&quot;Failed to detach from JVM: &quot; </span><span class="s2">+ </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getMessage</span><span class="s2">());</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Updates the list of available JVM processes.</span>
+     <span class="s3">*/</span>
+    <span class="s0">public void </span><span class="s1">updateProcessList</span><span class="s2">() {</span>
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">VirtualMachineDescriptor</span><span class="s2">&gt; </span><span class="s1">vms </span><span class="s2">= </span><span class="s1">virtualMachineProvider</span><span class="s2">.</span><span class="s1">list</span><span class="s2">();</span>
+        <span class="s1">observableProcessList</span><span class="s2">.</span><span class="s1">clear</span><span class="s2">();</span>
+
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">VirtualMachineDescriptor vm </span><span class="s2">: </span><span class="s1">vms</span><span class="s2">) {</span>
+            <span class="s1">String id </span><span class="s2">= </span><span class="s1">vm</span><span class="s2">.</span><span class="s1">id</span><span class="s2">();</span>
+            <span class="s1">String displayName </span><span class="s2">= </span><span class="s1">vm</span><span class="s2">.</span><span class="s1">displayName</span><span class="s2">();</span>
+            <span class="s1">String vmName </span><span class="s2">= </span><span class="s1">id </span><span class="s2">+ </span><span class="s5">&quot; - &quot; </span><span class="s2">+ </span><span class="s1">displayName</span><span class="s2">;</span>
+            <span class="s0">if </span><span class="s2">(!</span><span class="s1">displayName</span><span class="s2">.</span><span class="s1">contains</span><span class="s2">(</span><span class="s5">&quot;org.jetbrains.jps.cmdline.Launcher&quot;</span><span class="s2">)) {</span>
+                <span class="s1">observableProcessList</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">vmName</span><span class="s2">);</span>
+            <span class="s2">}</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">id</span><span class="s2">.</span><span class="s1">equals</span><span class="s2">(</span><span class="s1">selectedProcessId</span><span class="s2">)) {</span>
+                <span class="s1">setSelectedProcessName</span><span class="s2">(</span><span class="s1">vmName</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Refreshes the thread data.</span>
+     <span class="s3">*/</span>
+    <span class="s0">public void </span><span class="s1">refreshData</span><span class="s2">() {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">currentThreadMXBean </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">err</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s5">&quot;ThreadMXBean is not initialized.&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">long</span><span class="s2">[] </span><span class="s1">threadIds </span><span class="s2">= </span><span class="s1">currentThreadMXBean</span><span class="s2">.</span><span class="s1">getAllThreadIds</span><span class="s2">();</span>
+        <span class="s1">ThreadInfo</span><span class="s2">[] </span><span class="s1">threadInfos </span><span class="s2">= </span><span class="s1">currentThreadMXBean</span><span class="s2">.</span><span class="s1">getThreadInfo</span><span class="s2">(</span><span class="s1">threadIds</span><span class="s2">, </span><span class="s1">Integer</span><span class="s2">.</span><span class="s1">MAX_VALUE</span><span class="s2">);</span>
+
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">ThreadInfo</span><span class="s2">&gt; </span><span class="s1">tempThreadInfo </span><span class="s2">= </span><span class="s1">Arrays</span><span class="s2">.</span><span class="s1">stream</span><span class="s2">(</span><span class="s1">threadInfos</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">parallel</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">filter</span><span class="s2">(</span><span class="s1">threadInfo -&gt; </span><span class="s2">!</span><span class="s1">nameFilterActive </span><span class="s2">|| </span><span class="s1">threadInfo</span><span class="s2">.</span><span class="s1">getThreadName</span><span class="s2">().</span><span class="s1">contains</span><span class="s2">(</span><span class="s1">nameFilter</span><span class="s2">))</span>
+                <span class="s2">.</span><span class="s1">filter</span><span class="s2">(</span><span class="s1">threadInfo -&gt; </span><span class="s2">!</span><span class="s1">idFilterActive </span><span class="s2">|| </span><span class="s1">String</span><span class="s2">.</span><span class="s1">valueOf</span><span class="s2">(</span><span class="s1">threadInfo</span><span class="s2">.</span><span class="s1">getThreadId</span><span class="s2">()).</span><span class="s1">contains</span><span class="s2">(</span><span class="s1">idFilter</span><span class="s2">))</span>
+                <span class="s2">.</span><span class="s1">filter</span><span class="s2">(</span><span class="s1">threadInfo -&gt; </span><span class="s2">!</span><span class="s1">daemonFilterActive </span><span class="s2">|| </span><span class="s1">threadInfo</span><span class="s2">.</span><span class="s1">isDaemon</span><span class="s2">())</span>
+                <span class="s2">.</span><span class="s1">collect</span><span class="s2">(</span><span class="s1">Collectors</span><span class="s2">.</span><span class="s1">toList</span><span class="s2">());</span>
+
+        <span class="s1">Platform</span><span class="s2">.</span><span class="s1">runLater</span><span class="s2">(() </span><span class="s1">-&gt; </span><span class="s2">{</span>
+            <span class="s1">peakThreadCount</span><span class="s2">.</span><span class="s1">set</span><span class="s2">(</span><span class="s1">String</span><span class="s2">.</span><span class="s1">valueOf</span><span class="s2">(</span><span class="s1">currentThreadMXBean</span><span class="s2">.</span><span class="s1">getPeakThreadCount</span><span class="s2">()));</span>
+            <span class="s1">liveThreadCount</span><span class="s2">.</span><span class="s1">set</span><span class="s2">(</span><span class="s1">String</span><span class="s2">.</span><span class="s1">valueOf</span><span class="s2">(</span><span class="s1">currentThreadMXBean</span><span class="s2">.</span><span class="s1">getThreadCount</span><span class="s2">()));</span>
+            <span class="s1">daemonThreadCount</span><span class="s2">.</span><span class="s1">set</span><span class="s2">(</span><span class="s1">String</span><span class="s2">.</span><span class="s1">valueOf</span><span class="s2">(</span><span class="s1">currentThreadMXBean</span><span class="s2">.</span><span class="s1">getDaemonThreadCount</span><span class="s2">()));</span>
+            <span class="s1">observableThreadInfoList</span><span class="s2">.</span><span class="s1">setAll</span><span class="s2">(</span><span class="s1">tempThreadInfo</span><span class="s2">);</span>
+        <span class="s2">});</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Starts the scheduler to refresh thread data at the specified refresh rate.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">refreshRate the refresh rate in milliseconds</span>
+     <span class="s3">*/</span>
+    <span class="s0">public void </span><span class="s1">startRefreshDataScheduler</span><span class="s2">(</span><span class="s0">int </span><span class="s1">refreshRate</span><span class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">scheduledFuture </span><span class="s2">!= </span><span class="s0">null </span><span class="s2">&amp;&amp; !</span><span class="s1">scheduledFuture</span><span class="s2">.</span><span class="s1">isCancelled</span><span class="s2">()) {</span>
+            <span class="s1">scheduledFuture</span><span class="s2">.</span><span class="s1">cancel</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s1">scheduledFuture </span><span class="s2">= </span><span class="s1">scheduler</span><span class="s2">.</span><span class="s1">scheduleAtFixedRate</span><span class="s2">(</span><span class="s0">this</span><span class="s1">::refreshData</span><span class="s2">, </span><span class="s6">0</span><span class="s2">, </span><span class="s1">refreshRate</span><span class="s2">, </span><span class="s1">TimeUnit</span><span class="s2">.</span><span class="s1">MILLISECONDS</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Retrieves detailed information about the specified thread.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">threadInfo the ThreadInfo object to retrieve details for</span>
+     <span class="s3">* </span><span class="s4">@return </span><span class="s3">a string containing detailed information about the thread</span>
+     <span class="s3">*/</span>
+    <span class="s0">public </span><span class="s1">String getDetailedThreadInfo</span><span class="s2">(</span><span class="s1">ThreadInfo threadInfo</span><span class="s2">) {</span>
+        <span class="s1">StringBuilder output </span><span class="s2">= </span><span class="s0">new </span><span class="s1">StringBuilder</span><span class="s2">();</span>
+        <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Thread ID: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">threadInfo</span><span class="s2">.</span><span class="s1">getThreadId</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+        <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Thread Name: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">threadInfo</span><span class="s2">.</span><span class="s1">getThreadName</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+        <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Thread State: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">threadInfo</span><span class="s2">.</span><span class="s1">getThreadState</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+        <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Lock Name: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">threadInfo</span><span class="s2">.</span><span class="s1">getLockName</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+        <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Lock Owner Name: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">threadInfo</span><span class="s2">.</span><span class="s1">getLockOwnerName</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+        <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Lock Owner ID: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">threadInfo</span><span class="s2">.</span><span class="s1">getLockOwnerId</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+        <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Blocked Time: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">threadInfo</span><span class="s2">.</span><span class="s1">getBlockedTime</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+        <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Blocked Count: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">threadInfo</span><span class="s2">.</span><span class="s1">getBlockedCount</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+        <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Waited Time: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">threadInfo</span><span class="s2">.</span><span class="s1">getWaitedTime</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+        <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Waited Count: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">threadInfo</span><span class="s2">.</span><span class="s1">getWaitedCount</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+        <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;In Native: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">threadInfo</span><span class="s2">.</span><span class="s1">isInNative</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+        <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Suspended: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">threadInfo</span><span class="s2">.</span><span class="s1">isSuspended</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+        <span class="s1">StackTraceElement</span><span class="s2">[] </span><span class="s1">stackTrace </span><span class="s2">= </span><span class="s1">threadInfo</span><span class="s2">.</span><span class="s1">getStackTrace</span><span class="s2">();</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">stackTrace </span><span class="s2">!= </span><span class="s0">null </span><span class="s2">&amp;&amp; </span><span class="s1">stackTrace</span><span class="s2">.</span><span class="s1">length </span><span class="s2">&gt; </span><span class="s6">1</span><span class="s2">) {</span>
+            <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Stack Trace: </span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+            <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s6">1</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&lt; </span><span class="s1">stackTrace</span><span class="s2">.</span><span class="s1">length</span><span class="s2">; </span><span class="s1">i</span><span class="s2">++)</span>
+                <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\t</span><span class="s5">at &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">stackTrace</span><span class="s2">[</span><span class="s1">i</span><span class="s2">]).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s0">return </span><span class="s1">output</span><span class="s2">.</span><span class="s1">toString</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Retrieves information about deadlocked threads.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@return </span><span class="s3">a string containing information about deadlocked threads</span>
+     <span class="s3">*/</span>
+    <span class="s0">public </span><span class="s1">String getDeadlockedThreads</span><span class="s2">() {</span>
+        <span class="s1">StringBuilder output </span><span class="s2">= </span><span class="s0">new </span><span class="s1">StringBuilder</span><span class="s2">();</span>
+        <span class="s0">long</span><span class="s2">[] </span><span class="s1">deadlockedThreads </span><span class="s2">= </span><span class="s1">currentThreadMXBean</span><span class="s2">.</span><span class="s1">findDeadlockedThreads</span><span class="s2">();</span>
+        <span class="s0">long</span><span class="s2">[] </span><span class="s1">monitorDeadlockedThreads </span><span class="s2">= </span><span class="s1">currentThreadMXBean</span><span class="s2">.</span><span class="s1">findMonitorDeadlockedThreads</span><span class="s2">();</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">deadlockedThreads </span><span class="s2">== </span><span class="s0">null </span><span class="s2">&amp;&amp; </span><span class="s1">monitorDeadlockedThreads </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;No deadlocked threads found.&quot;</span><span class="s2">);</span>
+            <span class="s0">return </span><span class="s1">output</span><span class="s2">.</span><span class="s1">toString</span><span class="s2">();</span>
+        <span class="s2">}</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">deadlockedThreads </span><span class="s2">!= </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Deadlocked threads: </span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+            <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;---------------------------</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+
+            <span class="s0">for </span><span class="s2">(</span><span class="s0">long </span><span class="s1">threadId </span><span class="s2">: </span><span class="s1">deadlockedThreads</span><span class="s2">) {</span>
+                <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Thread ID: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">threadId</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+                <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Thread Name: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">currentThreadMXBean</span><span class="s2">.</span><span class="s1">getThreadInfo</span><span class="s2">(</span><span class="s1">threadId</span><span class="s2">).</span><span class="s1">getThreadName</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+                <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Waiting on: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">currentThreadMXBean</span><span class="s2">.</span><span class="s1">getThreadInfo</span><span class="s2">(</span><span class="s1">threadId</span><span class="s2">).</span><span class="s1">getLockName</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+                <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Locked by: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">currentThreadMXBean</span><span class="s2">.</span><span class="s1">getThreadInfo</span><span class="s2">(</span><span class="s1">threadId</span><span class="s2">).</span><span class="s1">getLockOwnerName</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">monitorDeadlockedThreads </span><span class="s2">!= </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Monitor deadlocked threads: </span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+            <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;---------------------------</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+
+            <span class="s0">for </span><span class="s2">(</span><span class="s0">long </span><span class="s1">threadId </span><span class="s2">: </span><span class="s1">monitorDeadlockedThreads</span><span class="s2">) {</span>
+                <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Thread ID: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">threadId</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+                <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Thread Name: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">currentThreadMXBean</span><span class="s2">.</span><span class="s1">getThreadInfo</span><span class="s2">(</span><span class="s1">threadId</span><span class="s2">).</span><span class="s1">getThreadName</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+                <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Waiting on: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">currentThreadMXBean</span><span class="s2">.</span><span class="s1">getThreadInfo</span><span class="s2">(</span><span class="s1">threadId</span><span class="s2">).</span><span class="s1">getLockName</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+                <span class="s1">output</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;Locked by: &quot;</span><span class="s2">).</span><span class="s1">append</span><span class="s2">(</span><span class="s1">currentThreadMXBean</span><span class="s2">.</span><span class="s1">getThreadInfo</span><span class="s2">(</span><span class="s1">threadId</span><span class="s2">).</span><span class="s1">getLockOwnerName</span><span class="s2">()).</span><span class="s1">append</span><span class="s2">(</span><span class="s5">&quot;</span><span class="s0">\n</span><span class="s5">&quot;</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s0">return </span><span class="s1">output</span><span class="s2">.</span><span class="s1">toString</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Shuts down the scheduler.</span>
+     <span class="s3">*/</span>
+    <span class="s0">public void </span><span class="s1">shutdownScheduler</span><span class="s2">() {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">scheduledFuture </span><span class="s2">!= </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s1">scheduledFuture</span><span class="s2">.</span><span class="s1">cancel</span><span class="s2">(</span><span class="s0">false</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s1">scheduler</span><span class="s2">.</span><span class="s1">shutdown</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Sets the name filter for thread filtering.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">newValue the new name filter value</span>
+     <span class="s3">*/</span>
+    <span class="s0">public void </span><span class="s1">setNameFilter</span><span class="s2">(</span><span class="s1">String newValue</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">nameFilter </span><span class="s2">= </span><span class="s1">newValue</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">nameFilterActive </span><span class="s2">= !</span><span class="s1">newValue</span><span class="s2">.</span><span class="s1">isEmpty</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Sets the ID filter for thread filtering.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">newValue the new ID filter value</span>
+     <span class="s3">*/</span>
+    <span class="s0">public void </span><span class="s1">setIdFilter</span><span class="s2">(</span><span class="s1">String newValue</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">idFilter </span><span class="s2">= </span><span class="s1">newValue</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">idFilterActive </span><span class="s2">= !</span><span class="s1">newValue</span><span class="s2">.</span><span class="s1">isEmpty</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Sets the daemon filter for thread filtering.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">val the new daemon filter value</span>
+     <span class="s3">*/</span>
+    <span class="s0">public void </span><span class="s1">setDaemonFilter</span><span class="s2">(</span><span class="s0">boolean </span><span class="s1">val</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">daemonFilterActive </span><span class="s2">= </span><span class="s1">val</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Retrieves the observable list of JVM processes.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@return </span><span class="s3">the observable list of JVM processes</span>
+     <span class="s3">*/</span>
+    <span class="s0">public </span><span class="s1">ObservableList</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">getObservableProcessList</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">observableProcessList</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Retrieves the current ThreadMXBean.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@return </span><span class="s3">the current ThreadMXBean</span>
+     <span class="s3">*/</span>
+    <span class="s0">public </span><span class="s1">ThreadMXBean getCurrentThreadMXBean</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">currentThreadMXBean</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Retrieves the selected process ID.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@return </span><span class="s3">the selected process ID</span>
+     <span class="s3">*/</span>
+    <span class="s0">public </span><span class="s1">String getSelectedProcessId</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">selectedProcessId</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Retrieves the selected process name.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@return </span><span class="s3">the selected process name</span>
+     <span class="s3">*/</span>
+    <span class="s0">public </span><span class="s1">String getSelectedProcessName</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">selectedProcessName</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Sets the selected process ID.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">selectedProcessId the new selected process ID</span>
+     <span class="s3">*/</span>
+    <span class="s0">public void </span><span class="s1">setSelectedProcessId</span><span class="s2">(</span><span class="s1">String selectedProcessId</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">selectedProcessId </span><span class="s2">= </span><span class="s1">selectedProcessId</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Sets the current ThreadMXBean.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">currentThreadMXBean the new current ThreadMXBean</span>
+     <span class="s3">*/</span>
+    <span class="s0">public void </span><span class="s1">setCurrentThreadMXBean</span><span class="s2">(</span><span class="s1">ThreadMXBean currentThreadMXBean</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">currentThreadMXBean </span><span class="s2">= </span><span class="s1">currentThreadMXBean</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Retrieves the JMXConnector.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@return </span><span class="s3">the JMXConnector</span>
+     <span class="s3">*/</span>
+    <span class="s0">public </span><span class="s1">JMXConnector getJmxConnector</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">jmxConnector</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Sets the JMXConnector.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">jmxConnector the new JMXConnector</span>
+     <span class="s3">*/</span>
+    <span class="s0">public void </span><span class="s1">setJmxConnector</span><span class="s2">(</span><span class="s1">JMXConnector jmxConnector</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">jmxConnector </span><span class="s2">= </span><span class="s1">jmxConnector</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Sets the selected process name.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@param </span><span class="s3">selectedProcessName the new selected process name</span>
+     <span class="s3">*/</span>
+    <span class="s0">public void </span><span class="s1">setSelectedProcessName</span><span class="s2">(</span><span class="s1">String selectedProcessName</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">selectedProcessName </span><span class="s2">= </span><span class="s1">selectedProcessName</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Retrieves the observable list of ThreadInfo objects.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@return </span><span class="s3">the observable list of ThreadInfo objects</span>
+     <span class="s3">*/</span>
+    <span class="s0">public </span><span class="s1">ObservableList</span><span class="s2">&lt;</span><span class="s1">ThreadInfo</span><span class="s2">&gt; </span><span class="s1">getObservableThreadInfoList</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">observableThreadInfoList</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Retrieves the peak thread count property.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@return </span><span class="s3">the peak thread count property</span>
+     <span class="s3">*/</span>
+    <span class="s0">public </span><span class="s1">SimpleStringProperty getPeakThreadCount</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">peakThreadCount</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Retrieves the thread count property.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@return </span><span class="s3">the thread count property</span>
+     <span class="s3">*/</span>
+    <span class="s0">public </span><span class="s1">SimpleStringProperty getLiveThreadCount</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">liveThreadCount</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Retrieves the daemon thread count property.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@return </span><span class="s3">the daemon thread count property</span>
+     <span class="s3">*/</span>
+    <span class="s0">public </span><span class="s1">SimpleStringProperty getDaemonThreadCount</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">daemonThreadCount</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Checks if the name filter is active.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@return </span><span class="s3">true if the name filter is active, false otherwise</span>
+     <span class="s3">*/</span>
+    <span class="s0">public boolean </span><span class="s1">isNameFilterActive</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">nameFilterActive</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Checks if the ID filter is active.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@return </span><span class="s3">true if the ID filter is active, false otherwise</span>
+     <span class="s3">*/</span>
+    <span class="s0">public boolean </span><span class="s1">isIdFilterActive</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">idFilterActive</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Checks if the daemon filter is active.</span>
+     <span class="s3">*</span>
+     <span class="s3">* </span><span class="s4">@return </span><span class="s3">true if the daemon filter is active, false otherwise</span>
+     <span class="s3">*/</span>
+    <span class="s0">public boolean </span><span class="s1">isDaemonFilterActive</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">daemonFilterActive</span><span class="s2">;</span>
+    <span class="s2">}</span>
+<span class="s2">}</span></pre>
+</body>
+</html>
